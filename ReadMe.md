@@ -27,6 +27,15 @@ Get your aisstream.io key [here](https://aisstream.io/) after making an account.
 2. Rename the duplicated file to .env
 3. Replace 'xxxxxx' with your aisstream key
 
+## Requirements
+
+You need the following requirements in order for this to run smoothly:
+
+1. Python 3.11+
+2. 2GB of avilable storage for a single day of data collection
+3. 54GB of available storage for a month of data collection
+4. 657GB of available storage for a year of data collection
+
 ## Running
 
 To start collecting data just run the following command in your recently made virtual enviornment:
