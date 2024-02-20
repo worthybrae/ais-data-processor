@@ -114,22 +114,25 @@ async def ais_stream():
     
     # Convert the message to a JSON formatted string
     subscription_message_json = json.dumps(subscription_message)
-
     data_stream = AISDataStream()
 
-    async with websockets.connect(url) as websocket:
-        # Send the subscription message within 3 seconds of opening the connection
-        await websocket.send(subscription_message_json)
-        
-        # Wait for a response to confirm subscription
-        response = await websocket.recv()
-        print(f"Subscription confirmation: {response}")
+    while True:  # Keep trying to connect
+        try:
+            async with websockets.connect(url) as websocket:
+                await websocket.send(subscription_message_json)
+                response = await websocket.recv()
+                print(f"Subscription confirmation: {response}")
 
-        # Now listen for incoming AIS data messages
-        async for message in websocket:
-            ais_obj = AISData(message)
-            data_stream.add_new_message(ais_obj)
-            print(ais_obj)
+                async for message in websocket:
+                    ais_obj = AISData(message)
+                    data_stream.add_new_message(ais_obj)
+                    print(ais_obj)
+        except websockets.exceptions.ConnectionClosedError as e:
+            print(f"Connection closed with error: {e}. Attempting to reconnect...")
+            await asyncio.sleep(5)  # Wait for 5 seconds before retrying
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            break  # Exit the loop if an unexpected error occurs
 
 # Run the coroutine
 asyncio.run(ais_stream())
