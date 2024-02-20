@@ -26,7 +26,7 @@ class AISData:
         self.latitude = float(message_data['latitude'])
         self.longitude = float(message_data['longitude'])
         timestamp_list = message_data['time_utc'].split(' ')
-        formatted_time = timestamp_list[1][:-3]
+        formatted_time = timestamp_list[1].split('.')[0] + '.' + timestamp_list[1].split('.')[1][:6]
         self.timestamp = datetime.strptime(' '.join([timestamp_list[0], formatted_time, timestamp_list[2], timestamp_list[3]]), '%Y-%m-%d %H:%M:%S.%f %z UTC')
         ifl_hash_str = f"{self.mmsi}{self.latitude:.4f}{self.longitude:.4f}{self.timestamp.strftime('%Y-%m-%d %H:%M')}"
         self.ifl_hash = hashlib.md5(ifl_hash_str.encode()).hexdigest()
