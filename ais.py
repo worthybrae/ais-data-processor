@@ -19,12 +19,17 @@ class AISData:
 
         # Access the metadata component of the JSON
         message_data = message_dict['MetaData']
+        position_data = message_dict['Message']['PositionReport']
 
         # Define object attributes
         self.mmsi = message_data['MMSI']
         self.ship_name = message_data['ShipName']
         self.latitude = float(message_data['latitude'])
         self.longitude = float(message_data['longitude'])
+        self.sog = float(position_data['Sog'])
+        self.cog = float(position_data['Cog'])
+        self.heading = float(position_data['TrueHeading'])
+        self.rate_of_turn = float(position_data['RateOfTurn'])
         timestamp_list = message_data['time_utc'].split(' ')
         formatted_time = timestamp_list[1].split('.')[0] + '.' + timestamp_list[1].split('.')[1][:6]
         self.timestamp = datetime.strptime(' '.join([timestamp_list[0], formatted_time, timestamp_list[2], timestamp_list[3]]), '%Y-%m-%d %H:%M:%S.%f %z UTC')
@@ -41,7 +46,7 @@ class AISDataStream:
     def __init__(self):
         self.messages = []
         self.last_hour = None
-        self.last_timestamp = None
+        self.last_date = None
 
     def add_new_message(self, message):
         self.messages.append([
@@ -50,6 +55,10 @@ class AISDataStream:
             message.latitude,
             message.longitude,
             message.timestamp,
+            message.sog,
+            message.cog,
+            message.heading,
+            message.rate_of_turn,
             message.ifl_hash,
             message.dup_hash,
             message.ingested_at
@@ -74,6 +83,10 @@ class AISDataStream:
             'latitude', 
             'longitude', 
             'timestamp',
+            'sog',
+            'cog',
+            'heading',
+            'rate_of_turn',
             'ifl_hash',
             'dup_hash',
             'ingested_at'
